@@ -1,0 +1,7 @@
+{
+  "name": "brand-ai-readiness-audit",
+  "version": "1.4.0-no-chromium-single-fetch",
+  "skills": [
+    { "id": "brand-ai-readiness-audit", "path": "skills/brand-ai-readiness-audit", "entrypoint": true }
+  ]
+}

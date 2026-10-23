@@ -1,0 +1,5 @@
+# No third-party dependencies at all. Every script in this build is
+# stdlib-only (argparse, json, html.parser, urllib.robotparser,
+# xml.etree.ElementTree, gzip, base64). Fetching is no longer done by
+# any script here — it's done once, by the invoking agent's own native
+# fetch/search tool — so even `requests` is no longer needed.

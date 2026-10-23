@@ -1,0 +1,134 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Website AI-Readiness Audit Report",
+  "type": "object",
+  "required": ["site", "audited_at", "summary", "findings"],
+  "properties": {
+    "site": { "type": "string" },
+    "audited_at": { "type": "string", "format": "date-time" },
+    "summary": {
+      "type": "object",
+      "required": ["total_findings", "critical", "high", "medium", "low"],
+      "properties": {
+        "total_findings": { "type": "integer", "minimum": 0 },
+        "critical": { "type": "integer", "minimum": 0 },
+        "high": { "type": "integer", "minimum": 0 },
+        "medium": { "type": "integer", "minimum": 0 },
+        "low": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "description": "Optional transparency block. Not part of the PS floor — shows what was actually checked, including where evidence was insufficient or degraded, so the audit can honestly say 'not enough evidence' instead of manufacturing a finding.",
+      "properties": {
+        "pages_sampled": { "type": "array", "items": { "type": "string" } },
+        "degraded_fetches": { "type": "array", "items": { "type": "string" } },
+        "self_compliance_checked": {
+          "type": "array",
+          "description": "Evidence that the audit tool itself respected robots.txt for its own fetches — distinct from bot_policy_analysis, which is about the site's policy toward other crawlers. One entry per path the tool considered fetching.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": { "type": "string" },
+              "allowed": { "type": "boolean" },
+              "fetched": { "type": "boolean", "description": "false if allowed was false and the tool correctly skipped it." }
+            }
+          }
+        },
+        "checks_run": { "type": "array", "items": { "type": "string" } },
+        "checks_skipped_insufficient_evidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "mechanism": { "type": "string" },
+              "page_url": { "type": "string" },
+              "reason": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "opportunities": {
+      "type": "array",
+      "description": "Optional. Proactive, non-obvious improvements that would strengthen discoverability or engagement even where no explicit defect was found — the PS explicitly invites suggestions that go beyond detected problems. Distinct from findings[]: these never carry a severity because they are not a diagnosed problem.",
+      "items": {
+        "type": "object",
+        "required": ["summary", "priority"],
+        "properties": {
+          "summary": { "type": "string" },
+          "rationale": { "type": "string", "description": "One line on the mechanism this would help with. Must not assert a specific unverified fact about the site (a figure, a named integration, a count) — keep this to the general mechanism. Any specific site fact the rationale depends on belongs in the sibling 'evidence' field instead, so it carries the same grounding as a finding." },
+          "evidence": { "type": "string", "description": "Optional, but required if 'rationale' or 'summary' states a specific fact that was actually observed on the site (e.g. 'the site already publishes X at /path') rather than a generic recommendation. Same plain-string, evidence-state-backed discipline as findings[].evidence — do not state an unverified specific fact (a named integration, a precise count) without this field backing it." },
+          "priority": { "enum": ["high", "medium", "low"] }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "severity", "evidence", "suggested_action"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "severity": { "enum": ["critical", "high", "medium", "low"] },
+          "confidence": {
+            "enum": ["high", "medium", "low"],
+            "description": "Optional. Certainty of the underlying evidence, kept separate from severity — see severity-rules.md."
+          },
+          "category": {
+            "enum": ["discoverability", "engagement"],
+            "description": "Optional."
+          },
+          "check_id": {
+            "type": "string",
+            "description": "Optional internal mechanism id, e.g. 'fact-cross-representation'. Never a research citation."
+          },
+          "affected_scope": {
+            "enum": ["page_local", "sampled_pages", "site_wide", "unknown"],
+            "description": "Optional. See scope-and-time.md. Report language must match this scope."
+          },
+          "why_it_matters": {
+            "type": "string",
+            "description": "Optional one-line mechanism explanation, in plain language, without overclaiming a downstream guarantee."
+          },
+          "evidence": {
+            "type": "string",
+            "description": "Required, plain string, matching the PS floor exactly (e.g. 'Crawled 3 sampled pages; price present in rendered DOM, not observed in raw HTTP, metadata, or structured data on 1/3.'). Richer structured detail lives in the sibling 'evidence_detail' field below — this field itself must stay a human-readable sentence, not an object."
+          },
+          "affected_urls": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Optional sibling field."
+          },
+          "evidence_detail": {
+            "type": "object",
+            "description": "Optional. Structured detail behind the 'evidence' sentence above — additive, never a replacement for it.",
+            "properties": {
+              "evidence_state": {
+                "type": "string",
+                "description": "The controlled-vocabulary state(s) from evidence-states.md that this finding was reconciled from."
+              },
+              "fetch_status": {
+                "enum": ["fetched", "skipped"],
+                "description": "Optional. Whether the underlying page fetch succeeded. This build has a single fetch mechanism (the invoking agent's native fetch tool) — see evidence-states.md — so there is no per-observation fetch-method distinction to record anymore, only whether the fetch itself succeeded. Never describe an observation using rendered-DOM language regardless of this value."
+              },
+              "time_state": {
+                "enum": ["confirmed_currently", "historically_supported_but_changed", "not_reproducible_now", "unverifiable"],
+                "description": "See scope-and-time.md."
+              }
+            }
+          },
+          "suggested_action": {
+            "type": "object",
+            "required": ["summary", "priority"],
+            "properties": {
+              "summary": { "type": "string" },
+              "priority": { "enum": ["critical", "high", "medium", "low"] }
+            }
+          }
+        }
+      }
+    }
+  }
+}

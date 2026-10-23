@@ -1,0 +1,22 @@
+{
+  "taxonomy_version": "2026-09-05",
+  "note": "This list must be refreshed periodically; crawler behavior and ownership change. Do not treat as frozen.",
+  "non_rendering_crawlers": [
+    { "user_agent": "GPTBot", "operator": "OpenAI", "role": "training" },
+    { "user_agent": "OAI-SearchBot", "operator": "OpenAI", "role": "real_time_answer" },
+    { "user_agent": "ChatGPT-User", "operator": "OpenAI", "role": "real_time_answer" },
+    { "user_agent": "PerplexityBot", "operator": "Perplexity", "role": "real_time_answer" },
+    { "user_agent": "Perplexity-User", "operator": "Perplexity", "role": "real_time_answer" },
+    { "user_agent": "ClaudeBot", "operator": "Anthropic", "role": "training" },
+    { "user_agent": "Claude-User", "operator": "Anthropic", "role": "real_time_answer" },
+    { "user_agent": "Claude-SearchBot", "operator": "Anthropic", "role": "real_time_answer" },
+    { "user_agent": "meta-externalagent", "operator": "Meta", "role": "training" },
+    { "user_agent": "Bytespider", "operator": "ByteDance", "role": "training" }
+  ],
+  "rendering_crawlers": [
+    { "user_agent": "Googlebot", "operator": "Google", "role": "search_and_answer" },
+    { "user_agent": "Google-Extended", "operator": "Google", "role": "training" },
+    { "user_agent": "Applebot", "operator": "Apple", "role": "search_and_answer" },
+    { "user_agent": "Applebot-Extended", "operator": "Apple", "role": "training" }
+  ]
+}
